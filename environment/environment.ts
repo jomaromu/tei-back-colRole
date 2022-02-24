@@ -5,6 +5,7 @@ const rolesColaborador = {
     VendedorNormalRole: 'VendedorNormalRole',
     DiseniadorRole: 'DiseniadorRole',
     DiseniadorvipRole: 'DiseniadorvipRole',
+    AdminRole: 'AdminRole',
 }
 
 export const environmnet = {

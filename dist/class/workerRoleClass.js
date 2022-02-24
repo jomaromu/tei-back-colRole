@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleColClass = void 0;
-// Modelo 
+// Modelo
 const roleWorkerModel_1 = __importDefault(require("../models/roleWorkerModel"));
 class RoleColClass {
     constructor() { }
@@ -14,40 +14,40 @@ class RoleColClass {
         const nombre = req.body.nombre;
         const nuevoRole = new roleWorkerModel_1.default({
             idCreador: idCreador,
-            nombre: nombre
+            nombre: nombre,
         });
         nuevoRole.save((err, roleDB) => {
             if (err) {
                 return resp.json({
                     mensaje: `Error interno`,
-                    err
+                    err,
                 });
             }
             else {
                 return resp.json({
                     ok: true,
                     mensaje: `Role ${nombre} creado`,
-                    roleDB
+                    roleDB,
                 });
             }
         });
     }
     // Editar role
     editarRole(req, resp) {
-        const id = req.get('id');
-        const estado = req.get('estado');
+        const id = req.get("id");
+        const estado = req.get("estado");
         // const estado: boolean = castEstado(estadoHeader);
         const query = {
             nombre: req.body.nombre,
             nivel: Number(req.body.nivel),
-            estado: estado
+            estado: estado,
         };
         roleWorkerModel_1.default.findById(id, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
                     mensaje: `Error interno`,
-                    err
+                    err,
                 });
             }
             if (!roleDB) {
@@ -70,7 +70,7 @@ class RoleColClass {
                     return resp.json({
                         ok: false,
                         mensaje: `No se pudo editar la Sucursal`,
-                        err
+                        err,
                     });
                 }
                 if (!nuevoRoleDB) {
@@ -82,78 +82,79 @@ class RoleColClass {
                 return resp.json({
                     ok: true,
                     mensaje: `Role actualizado`,
-                    nuevoRoleDB
+                    nuevoRoleDB,
                 });
             });
         });
     }
     // Obtener role por ID
     obtenerRoleID(req, resp) {
-        const id = req.get('id');
+        const id = req.get("id");
         roleWorkerModel_1.default.findById(id, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
                     mensaje: `Error al búscar role o no existe`,
-                    err
+                    err,
                 });
             }
             if (!roleDB) {
                 return resp.json({
                     ok: false,
-                    mensaje: `No existe el role en la base de datos`
+                    mensaje: `No existe el role en la base de datos`,
                 });
             }
             return resp.json({
                 ok: true,
-                roleDB
+                roleDB,
             });
         });
     }
     // Obtener todos los roles
     obtenerTodos(req, resp) {
-        const estado = req.get('estado');
+        const estado = req.get("estado");
         // const estado: boolean = castEstado(estadoHeader);
-        roleWorkerModel_1.default.find({ estado: estado }, (err, rolesDB) => {
+        // estado: estado
+        roleWorkerModel_1.default.find({}, (err, rolesDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
                     mensaje: `Error al búscar role o no existe`,
-                    err
+                    err,
                 });
             }
             if (!rolesDB || rolesDB.length === 0) {
                 return resp.json({
                     ok: false,
-                    mensaje: `No existen roles en la base de datos`
+                    mensaje: `No existen roles en la base de datos`,
                 });
             }
             return resp.json({
                 ok: true,
-                rolesDB
+                rolesDB,
             });
         });
     }
     // Eliminar un role por ID
     eliminarRole(req, resp) {
-        const id = req.get('id');
+        const id = req.get("id");
         roleWorkerModel_1.default.findByIdAndDelete(id, {}, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
                     mensaje: `Error interno`,
-                    err
+                    err,
                 });
             }
             if (!roleDB) {
                 return resp.json({
                     ok: false,
-                    mensaje: `No existe el role en la base de datos`
+                    mensaje: `No existe el role en la base de datos`,
                 });
             }
             return resp.json({
                 ok: true,
-                roleDB
+                roleDB,
             });
         });
     }

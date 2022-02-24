@@ -8,6 +8,7 @@ const rolesColaborador = {
     VendedorNormalRole: 'VendedorNormalRole',
     DiseniadorRole: 'DiseniadorRole',
     DiseniadorvipRole: 'DiseniadorvipRole',
+    AdminRole: 'AdminRole',
 };
 exports.environmnet = {
     port: Number(process.env.puerto) || 3013,
