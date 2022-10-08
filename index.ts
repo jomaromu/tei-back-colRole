@@ -20,6 +20,9 @@ server.app.use(fileUpload());
 // cors
 server.app.use(cors({ origin: true, credentials: true }));
 
+// models
+require("./models/workerModel");
+
 // conexion local
 mongoose.connect(
   "mongodb://127.0.0.1:27017/todoImpresiones",

@@ -4,17 +4,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleColClass = void 0;
+const mongoose = require("mongoose");
 // Modelo
 const roleWorkerModel_1 = __importDefault(require("../models/roleWorkerModel"));
 class RoleColClass {
     constructor() { }
     // Nuevo role
     nuevoRole(req, resp) {
-        const idCreador = req.usuario._id;
+        const idCreador = new mongoose.Types.ObjectId(req.usuario._id);
         const nombre = req.body.nombre;
+        const vendedor = req.body.vendedor;
+        const diseniador = req.body.diseniador;
+        const restricciones = req.body.restricciones;
         const nuevoRole = new roleWorkerModel_1.default({
-            idCreador: idCreador,
-            nombre: nombre,
+            idCreador,
+            nombre,
+            vendedor,
+            diseniador,
+            restricciones,
         });
         nuevoRole.save((err, roleDB) => {
             if (err) {
@@ -35,12 +42,15 @@ class RoleColClass {
     // Editar role
     editarRole(req, resp) {
         const id = req.get("id");
-        const estado = req.get("estado");
-        // const estado: boolean = castEstado(estadoHeader);
+        const nombre = req.body.nombre;
+        const estado = req.body.estado;
+        const vendedor = req.body.vendedor;
+        const diseniador = req.body.diseniador;
         const query = {
-            nombre: req.body.nombre,
-            nivel: Number(req.body.nivel),
-            estado: estado,
+            nombre,
+            estado,
+            vendedor,
+            diseniador,
         };
         roleWorkerModel_1.default.findById(id, (err, roleDB) => {
             if (err) {
@@ -59,32 +69,45 @@ class RoleColClass {
             if (!query.nombre) {
                 query.nombre = roleDB.nombre;
             }
-            if (!query.nivel) {
-                query.nivel = roleDB.nivel;
-            }
-            if (!query.estado) {
-                query.estado = roleDB.estado;
-            }
-            roleWorkerModel_1.default.findByIdAndUpdate(id, query, { new: true }, (err, nuevoRoleDB) => {
+            roleWorkerModel_1.default.findByIdAndUpdate(id, query, { new: true }, (err, roleDB) => {
                 if (err) {
                     return resp.json({
                         ok: false,
-                        mensaje: `No se pudo editar la Sucursal`,
+                        mensaje: `No se pudo editar el role`,
                         err,
                     });
                 }
-                if (!nuevoRoleDB) {
+                else {
                     return resp.json({
-                        ok: false,
-                        mensaje: `No existe el role que quiere Editar`,
+                        ok: true,
+                        mensaje: `Role actualizado`,
+                        roleDB,
                     });
                 }
+            });
+        });
+    }
+    editarRestricciones(req, resp) {
+        const id = req.get("id");
+        const restricciones = req.body.restricciones;
+        const query = {
+            restricciones,
+        };
+        roleWorkerModel_1.default.findByIdAndUpdate(id, query, { new: true }, (err, roleDB) => {
+            if (err) {
+                return resp.json({
+                    ok: false,
+                    mensaje: `No se pudo editar el role`,
+                    err,
+                });
+            }
+            else {
                 return resp.json({
                     ok: true,
                     mensaje: `Role actualizado`,
-                    nuevoRoleDB,
+                    roleDB,
                 });
-            });
+            }
         });
     }
     // Obtener role por ID
@@ -98,12 +121,6 @@ class RoleColClass {
                     err,
                 });
             }
-            if (!roleDB) {
-                return resp.json({
-                    ok: false,
-                    mensaje: `No existe el role en la base de datos`,
-                });
-            }
             return resp.json({
                 ok: true,
                 roleDB,
@@ -112,21 +129,15 @@ class RoleColClass {
     }
     // Obtener todos los roles
     obtenerTodos(req, resp) {
-        const estado = req.get("estado");
-        // const estado: boolean = castEstado(estadoHeader);
-        // estado: estado
-        roleWorkerModel_1.default.find({}, (err, rolesDB) => {
+        roleWorkerModel_1.default
+            .find({})
+            .populate("idCreador")
+            .exec((err, rolesDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
                     mensaje: `Error al búscar role o no existe`,
                     err,
-                });
-            }
-            if (!rolesDB || rolesDB.length === 0) {
-                return resp.json({
-                    ok: false,
-                    mensaje: `No existen roles en la base de datos`,
                 });
             }
             return resp.json({
@@ -144,12 +155,6 @@ class RoleColClass {
                     ok: false,
                     mensaje: `Error interno`,
                     err,
-                });
-            }
-            if (!roleDB) {
-                return resp.json({
-                    ok: false,
-                    mensaje: `No existe el role en la base de datos`,
                 });
             }
             return resp.json({
