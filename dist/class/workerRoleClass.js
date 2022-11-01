@@ -12,12 +12,14 @@ class RoleColClass {
     // Nuevo role
     nuevoRole(req, resp) {
         const idCreador = new mongoose.Types.ObjectId(req.usuario._id);
+        const foranea = new mongoose.Types.ObjectId(req.body.foranea);
         const nombre = req.body.nombre;
         const vendedor = req.body.vendedor;
         const diseniador = req.body.diseniador;
         const restricciones = req.body.restricciones;
         const nuevoRole = new roleWorkerModel_1.default({
             idCreador,
+            foranea,
             nombre,
             vendedor,
             diseniador,
@@ -41,7 +43,8 @@ class RoleColClass {
     }
     // Editar role
     editarRole(req, resp) {
-        const id = req.get("id");
+        const _id = new mongoose.Types.ObjectId(req.get("id"));
+        const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
         const nombre = req.body.nombre;
         const estado = req.body.estado;
         const vendedor = req.body.vendedor;
@@ -52,7 +55,7 @@ class RoleColClass {
             vendedor,
             diseniador,
         };
-        roleWorkerModel_1.default.findById(id, (err, roleDB) => {
+        roleWorkerModel_1.default.findOne({ _id, foranea }, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
@@ -69,7 +72,7 @@ class RoleColClass {
             if (!query.nombre) {
                 query.nombre = roleDB.nombre;
             }
-            roleWorkerModel_1.default.findByIdAndUpdate(id, query, { new: true }, (err, roleDB) => {
+            roleWorkerModel_1.default.findOneAndUpdate({ _id, foranea }, query, { new: true }, (err, roleDB) => {
                 if (err) {
                     return resp.json({
                         ok: false,
@@ -88,12 +91,13 @@ class RoleColClass {
         });
     }
     editarRestricciones(req, resp) {
-        const id = req.get("id");
+        const _id = new mongoose.Types.ObjectId(req.get("id"));
+        const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
         const restricciones = req.body.restricciones;
         const query = {
             restricciones,
         };
-        roleWorkerModel_1.default.findByIdAndUpdate(id, query, { new: true }, (err, roleDB) => {
+        roleWorkerModel_1.default.findOneAndUpdate({ _id, foranea }, query, { new: true }, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
@@ -112,8 +116,9 @@ class RoleColClass {
     }
     // Obtener role por ID
     obtenerRoleID(req, resp) {
-        const id = req.get("id");
-        roleWorkerModel_1.default.findById(id, (err, roleDB) => {
+        const _id = new mongoose.Types.ObjectId(req.get("id"));
+        const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
+        roleWorkerModel_1.default.findOne({ _id, foranea }, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,
@@ -129,8 +134,9 @@ class RoleColClass {
     }
     // Obtener todos los roles
     obtenerTodos(req, resp) {
+        const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
         roleWorkerModel_1.default
-            .find({})
+            .find({ foranea })
             .populate("idCreador")
             .exec((err, rolesDB) => {
             if (err) {
@@ -148,8 +154,9 @@ class RoleColClass {
     }
     // Eliminar un role por ID
     eliminarRole(req, resp) {
-        const id = req.get("id");
-        roleWorkerModel_1.default.findByIdAndDelete(id, {}, (err, roleDB) => {
+        const _id = new mongoose.Types.ObjectId(req.get("id"));
+        const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
+        roleWorkerModel_1.default.findOneAndDelete({ _id, foranea }, {}, (err, roleDB) => {
             if (err) {
                 return resp.json({
                     ok: false,

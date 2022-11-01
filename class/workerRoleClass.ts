@@ -14,6 +14,7 @@ export class RoleColClass {
   // Nuevo role
   nuevoRole(req: any, resp: Response): void {
     const idCreador = new mongoose.Types.ObjectId(req.usuario._id);
+    const foranea = new mongoose.Types.ObjectId(req.body.foranea);
     const nombre = req.body.nombre;
     const vendedor = req.body.vendedor;
     const diseniador = req.body.diseniador;
@@ -21,6 +22,7 @@ export class RoleColClass {
 
     const nuevoRole = new roleWorkerModel({
       idCreador,
+      foranea,
       nombre,
       vendedor,
       diseniador,
@@ -45,7 +47,8 @@ export class RoleColClass {
 
   // Editar role
   editarRole(req: any, resp: Response): void {
-    const id = req.get("id");
+    const _id = new mongoose.Types.ObjectId(req.get("id"));
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
     const nombre: string = req.body.nombre;
     const estado: boolean = req.body.estado;
     const vendedor: boolean = req.body.vendedor;
@@ -58,59 +61,63 @@ export class RoleColClass {
       diseniador,
     };
 
-    roleWorkerModel.findById(id, (err: CallbackError, roleDB: any) => {
-      if (err) {
-        return resp.json({
-          ok: false,
-          mensaje: `Error interno`,
-          err,
-        });
-      }
-
-      if (!roleDB) {
-        return resp.json({
-          ok: false,
-          mensaje: `No existe el role con ese ID`,
-        });
-      }
-
-      if (!query.nombre) {
-        query.nombre = roleDB.nombre;
-      }
-
-      roleWorkerModel.findByIdAndUpdate(
-        id,
-        query,
-        { new: true },
-        (err: CallbackError, roleDB: any) => {
-          if (err) {
-            return resp.json({
-              ok: false,
-              mensaje: `No se pudo editar el role`,
-              err,
-            });
-          } else {
-            return resp.json({
-              ok: true,
-              mensaje: `Role actualizado`,
-              roleDB,
-            });
-          }
+    roleWorkerModel.findOne(
+      { _id, foranea },
+      (err: CallbackError, roleDB: any) => {
+        if (err) {
+          return resp.json({
+            ok: false,
+            mensaje: `Error interno`,
+            err,
+          });
         }
-      );
-    });
+
+        if (!roleDB) {
+          return resp.json({
+            ok: false,
+            mensaje: `No existe el role con ese ID`,
+          });
+        }
+
+        if (!query.nombre) {
+          query.nombre = roleDB.nombre;
+        }
+
+        roleWorkerModel.findOneAndUpdate(
+          { _id, foranea },
+          query,
+          { new: true },
+          (err: CallbackError, roleDB: any) => {
+            if (err) {
+              return resp.json({
+                ok: false,
+                mensaje: `No se pudo editar el role`,
+                err,
+              });
+            } else {
+              return resp.json({
+                ok: true,
+                mensaje: `Role actualizado`,
+                roleDB,
+              });
+            }
+          }
+        );
+      }
+    );
   }
 
   editarRestricciones(req: any, resp: Response): void {
-    const id = req.get("id");
+    const _id = new mongoose.Types.ObjectId(req.get("id"));
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
     const restricciones: Restricciones = req.body.restricciones;
 
     const query = {
       restricciones,
     };
 
-    roleWorkerModel.findByIdAndUpdate(
-      id,
+    roleWorkerModel.findOneAndUpdate(
+      { _id, foranea },
       query,
       { new: true },
       (err: any, roleDB: any) => {
@@ -133,28 +140,33 @@ export class RoleColClass {
 
   // Obtener role por ID
   obtenerRoleID(req: any, resp: Response): void {
-    const id = req.get("id");
+    const _id = new mongoose.Types.ObjectId(req.get("id"));
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
 
-    roleWorkerModel.findById(id, (err: CallbackError, roleDB: Document) => {
-      if (err) {
+    roleWorkerModel.findOne(
+      { _id, foranea },
+      (err: CallbackError, roleDB: Document) => {
+        if (err) {
+          return resp.json({
+            ok: false,
+            mensaje: `Error al búscar role o no existe`,
+            err,
+          });
+        }
+
         return resp.json({
-          ok: false,
-          mensaje: `Error al búscar role o no existe`,
-          err,
+          ok: true,
+          roleDB,
         });
       }
-
-      return resp.json({
-        ok: true,
-        roleDB,
-      });
-    });
+    );
   }
 
   // Obtener todos los roles
   obtenerTodos(req: any, resp: Response): void {
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
     roleWorkerModel
-      .find({})
+      .find({ foranea })
       .populate("idCreador")
       .exec((err: CallbackError, rolesDB: Array<RoleColModel>) => {
         if (err) {
@@ -174,10 +186,11 @@ export class RoleColClass {
 
   // Eliminar un role por ID
   eliminarRole(req: any, resp: Response): void {
-    const id = req.get("id");
+    const _id = new mongoose.Types.ObjectId(req.get("id"));
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
 
-    roleWorkerModel.findByIdAndDelete(
-      id,
+    roleWorkerModel.findOneAndDelete(
+      { _id, foranea },
       {},
       (err: CallbackError, roleDB: any) => {
         if (err) {

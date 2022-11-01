@@ -21,8 +21,10 @@ server.app.use((0, express_fileupload_1.default)());
 server.app.use((0, cors_1.default)({ origin: true, credentials: true }));
 // models
 require("./models/workerModel");
+require("./models/etapasModel");
+require("./models/coloresModel");
 // conexion local
-mongoose_1.default.connect("mongodb://127.0.0.1:27017/todoImpresiones", { autoIndex: false }, (err) => {
+mongoose_1.default.connect("mongodb://127.0.0.1:27017/angie", { autoIndex: false }, (err) => {
     if (err)
         throw err;
     console.log("Base de datos Online");
